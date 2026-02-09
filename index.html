@@ -49,16 +49,19 @@
 
     /* Header */
     header{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap: 16px;
-      margin-bottom: 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 16px;
+  margin-bottom: 18px;
+  text-align:center;
+  flex-direction: column;
+}
     }
     .titleBlock h1{
       margin:0;
       font-family: var(--serif);
-      font-size: 42px;
+      font-size: 44px;
       letter-spacing: 0.4px;
       line-height:1.05;
       color: var(--parch);
@@ -306,6 +309,44 @@
       gap: 10px;
       min-width:0;
     }
+    /* Travel Ledger (bottom event log) */
+.ledger{
+  margin-top: 16px;
+}
+.ledgerTable{
+  width:100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.ledgerTable th, .ledgerTable td{
+  padding: 10px 10px;
+  border-bottom: 1px solid rgba(27,23,18,0.10);
+  vertical-align: top;
+}
+.ledgerTable th{
+  text-align:left;
+  font-family: var(--serif);
+  font-size: 14px;
+  color: rgba(27,23,18,0.78);
+}
+.ledgerTable td{
+  color: rgba(27,23,18,0.78);
+}
+.ledgerMono{
+  font-family: var(--mono);
+  font-size: 12px;
+  color: rgba(27,23,18,0.78);
+}
+.km{
+  white-space:nowrap;
+  font-weight: 800;
+  color: rgba(27,23,18,0.90);
+}
+.smallmuted{
+  color: rgba(27,23,18,0.60);
+  font-size: 12px;
+  margin-top: 3px;
+}
     .icon{
       width: 30px;
       height: 30px;
@@ -450,7 +491,7 @@
 
     <header>
       <div class="titleBlock">
-        <h1>The Big Hop</h1>
+        <h1>The Big Hop.🌎</h1>
         <p>A message that travels the world—one hop at a time. Each confirmed hop becomes a permanent pin: a city, a moment, a mark left behind.</p>
         <div class="tagline">Move the message. Leave your mark. Join the hop.</div>
       </div>
@@ -622,6 +663,76 @@ bc1qexampleaddress000000000000000000000000000000</div>
       <div class="modalActions">
         <button class="btn btnGhost" id="closeBtn">Close</button>
         <button class="btn" id="copyBtn">Copy Address</button>
+      </div>
+    </div>
+        <!-- Travel Ledger (Event Log) -->
+    <div class="plaque ledger">
+      <div class="sectionHeader">
+        <div>
+          <h2>Travel Ledger</h2>
+          <div class="sub">Recent confirmed hops (Phase 1 mock). Later this will be pulled from the map + blockchain confirmations.</div>
+        </div>
+      </div>
+
+      <div class="list" style="max-height: 520px;">
+        <table class="ledgerTable" aria-label="Travel ledger">
+          <thead>
+            <tr>
+              <th style="width:120px;">When</th>
+              <th style="width:140px;">Alias</th>
+              <th>From → To</th>
+              <th style="width:140px;">Distance</th>
+              <th style="width:120px;">Amount</th>
+              <th style="width:240px;">TXID</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="ledgerMono">2026-02-10</div>
+                <div class="smallmuted">12:41 UTC</div>
+              </td>
+              <td><span class="holder">quietatlas</span></td>
+              <td>
+                Berlin → Cape Town
+                <div class="smallmuted">Pinned at Cape Town, South Africa</div>
+              </td>
+              <td class="km">9,240 km</td>
+              <td><span class="ledgerMono">0.00010 BTC</span></td>
+              <td><span class="ledgerMono">tx_placeholder_3</span></td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="ledgerMono">2026-02-09</div>
+                <div class="smallmuted">19:12 UTC</div>
+              </td>
+              <td><span class="holder">paperplane</span></td>
+              <td>
+                Tokyo → Berlin
+                <div class="smallmuted">Pinned at Berlin, Germany</div>
+              </td>
+              <td class="km">8,916 km</td>
+              <td><span class="ledgerMono">0.00010 BTC</span></td>
+              <td><span class="ledgerMono">tx_placeholder_2</span></td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="ledgerMono">2026-02-08</div>
+                <div class="smallmuted">08:05 UTC</div>
+              </td>
+              <td><span class="holder">northstar</span></td>
+              <td>
+                Vancouver Island → Tokyo
+                <div class="smallmuted">Pinned at Tokyo, Japan</div>
+              </td>
+              <td class="km">7,542 km</td>
+              <td><span class="ledgerMono">0.00010 BTC</span></td>
+              <td><span class="ledgerMono">tx_placeholder_1</span></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
