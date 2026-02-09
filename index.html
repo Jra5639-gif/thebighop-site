@@ -3,505 +3,698 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>The Big Hop — Map Preview</title>
-
-  <!-- IMPORTANT:
-       Replace YOUR_GOOGLE_MAPS_API_KEY below with your real key when you're ready.
-       For now, the page will still load a "map placeholder" if no key is provided.
-  -->
+  <title>The Big Hop</title>
 
   <style>
-   <style>
-  :root{
-    --paper: #f6f1e6;
-    --paper2:#efe6d6;
-    --ink: #1e1b16;
-    --muted: rgba(30,27,22,0.65);
-    --line: rgba(30,27,22,0.12);
-    --soft: rgba(30,27,22,0.06);
-    --radius: 18px;
-    --shadow: 0 18px 55px rgba(0,0,0,0.18);
-    --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
-    --sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  }
-  *{ box-sizing:border-box; }
-  html,body{ height:100%; }
-  body{
-    margin:0;
-    background: var(--paper);
-    color: var(--ink);
-    overflow:hidden;
-    font-family: var(--sans);
-  }
+    :root{
+      /* Museum / artifact palette */
+      --wall: #14110D;        /* dark gallery wall */
+      --wall2:#0F0D0A;
+      --ink:  #1B1712;        /* dark ink */
+      --parch: #F1E6D2;       /* parchment */
+      --paper: #E7D6B5;       /* aged paper */
+      --line: rgba(27,23,18,0.18);
+      --muted: rgba(27,23,18,0.66);
+      --brass:#B08D57;        /* brass accent */
+      --wax:  #7A2E2E;        /* wax seal red */
+      --moss: #2E4A3F;        /* oxidized green */
 
-  /* Map layer: warm atlas wash */
-  #map{
-    position:fixed;
-    inset:0;
-    width:100vw;
-    height:100vh;
-    background:
-      radial-gradient(900px 500px at 25% 20%, rgba(94,73,42,0.10), transparent 60%),
-      radial-gradient(800px 520px at 80% 70%, rgba(40,75,92,0.09), transparent 60%),
-      linear-gradient(180deg, var(--paper), var(--paper2));
-  }
+      --radius: 18px;
+      --shadow: 0 22px 70px rgba(0,0,0,0.35);
+      --shadowSoft: 0 12px 40px rgba(0,0,0,0.22);
 
-  /* Subtle texture */
-  #map::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background-image:
-      linear-gradient(rgba(30,27,22,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(30,27,22,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    opacity: 0.22;
-    pointer-events:none;
-  }
-
-  /* Placeholder center note */
-  .map-placeholder{
-    position:absolute;
-    inset:0;
-    display:grid;
-    place-items:center;
-    pointer-events:none;
-  }
-  .map-placeholder .box{
-    width:min(720px, 92vw);
-    padding:24px 20px;
-    border:1px solid var(--line);
-    border-radius: var(--radius);
-    background: rgba(246,241,230,0.78);
-    backdrop-filter: blur(6px);
-    box-shadow: var(--shadow);
-    text-align:center;
-  }
-  .map-placeholder h1{
-    margin:0 0 8px;
-    font-family: var(--serif);
-    font-size: 30px;
-    letter-spacing:0.2px;
-  }
-  .map-placeholder p{
-    margin: 8px 0;
-    color: var(--muted);
-    line-height:1.5;
-    font-size: 15px;
-  }
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:8px 12px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    color: var(--muted);
-    font-size: 13px;
-    margin-top: 10px;
-    background: rgba(255,255,255,0.25);
-  }
-  .dot{
-    width:8px; height:8px; border-radius:99px;
-    background: rgba(30,27,22,0.55);
-    box-shadow: 0 0 0 6px rgba(30,27,22,0.08);
-  }
-
-  /* Right panel: paper card */
-  .panel{
-    position:fixed;
-    top:18px;
-    right:18px;
-    bottom:18px;
-    width: min(420px, 92vw);
-    border-radius: var(--radius);
-    background: rgba(246,241,230,0.92);
-    border: 1px solid var(--line);
-    box-shadow: var(--shadow);
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-  }
-
-  .panel-header{
-    padding:18px 18px 12px;
-    border-bottom:1px solid var(--line);
-    background: rgba(255,255,255,0.18);
-  }
-  .brand h2{
-    margin:0;
-    font-family: var(--serif);
-    font-size: 22px;
-    letter-spacing:0.2px;
-  }
-  .brand small{
-    display:block;
-    margin-top:6px;
-    color: var(--muted);
-    line-height:1.4;
-  }
-  .tagline{
-    margin-top:10px;
-    font-weight:650;
-    color: rgba(30,27,22,0.85);
-    font-size: 14px;
-  }
-
-  .panel-body{
-    padding: 14px 14px 86px;
-    overflow:auto;
-  }
-
-  .section{
-    border:1px solid var(--line);
-    border-radius: 14px;
-    background: rgba(255,255,255,0.20);
-    padding: 12px;
-    margin: 10px 0 14px;
-  }
-  .section h3{
-    margin:0 0 10px;
-    font-family: var(--serif);
-    font-size: 14px;
-    letter-spacing:0.2px;
-    color: rgba(30,27,22,0.78);
-  }
-
-  .row{
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    padding:10px 10px;
-    border-radius: 12px;
-    border:1px solid transparent;
-  }
-  .row:hover{
-    border-color: rgba(30,27,22,0.16);
-    background: rgba(30,27,22,0.03);
-  }
-  .row strong{
-    font-size: 14px;
-    font-weight: 700;
-  }
-  .row span{
-    color: var(--muted);
-    font-size: 13px;
-  }
-  .row .meta{
-    color: var(--muted);
-    font-size: 12px;
-    margin-top: 4px;
-    line-height: 1.3;
-  }
-
-  .stat-grid{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap:10px;
-  }
-  .stat{
-    border:1px solid var(--line);
-    background: rgba(255,255,255,0.25);
-    border-radius: 12px;
-    padding: 10px;
-  }
-  .stat .k{
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .stat .v{
-    font-size: 16px;
-    margin-top:4px;
-    font-weight: 750;
-  }
-
-  .dest{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    padding:10px 10px;
-    border-radius:12px;
-    border:1px solid transparent;
-  }
-  .dest:hover{
-    border-color: rgba(30,27,22,0.16);
-    background: rgba(30,27,22,0.03);
-  }
-  .badge{
-    width:30px; height:30px;
-    display:grid; place-items:center;
-    border:1px solid var(--line);
-    border-radius: 10px;
-    background: rgba(255,255,255,0.25);
-    flex: 0 0 auto;
-  }
-  .dest .name{
-    font-weight: 700;
-    font-size: 14px;
-  }
-  .dest .status{
-    font-size: 12px;
-    color: var(--muted);
-    border:1px solid var(--line);
-    padding:6px 10px;
-    border-radius:999px;
-    background: rgba(255,255,255,0.25);
-    flex: 0 0 auto;
-  }
-
-  .panel-footer{
-    position:absolute;
-    left:0; right:0; bottom:0;
-    padding: 12px 12px;
-    border-top:1px solid var(--line);
-    background: rgba(255,255,255,0.22);
-    display:flex;
-    gap:10px;
-  }
-  button{
-    appearance:none;
-    border:1px solid var(--line);
-    background: rgba(30,27,22,0.06);
-    color: var(--ink);
-    padding: 12px 14px;
-    border-radius: 14px;
-    cursor:pointer;
-    font-weight: 750;
-    width:100%;
-  }
-  button:hover{ background: rgba(30,27,22,0.09); }
-
-  .modal-backdrop{
-    position:fixed;
-    inset:0;
-    background: rgba(30,27,22,0.45);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding: 18px;
-  }
-  .modal{
-    width: min(560px, 96vw);
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    background: rgba(246,241,230,0.94);
-    box-shadow: var(--shadow);
-    padding: 16px;
-  }
-  .modal h4{
-    margin: 4px 0 10px;
-    font-family: var(--serif);
-    font-size: 16px;
-  }
-  .modal p{
-    margin: 0 0 12px;
-    color: var(--muted);
-    line-height:1.5;
-    font-size: 14px;
-  }
-  .mono{
-    font-family: var(--mono);
-    font-size: 12px;
-    color: rgba(30,27,22,0.78);
-    background: rgba(255,255,255,0.35);
-    border:1px solid var(--line);
-    border-radius: 12px;
-    padding: 10px;
-    overflow:auto;
-  }
-  .modal .actions{
-    display:flex;
-    gap:10px;
-    margin-top: 12px;
-  }
-  .ghost{ background: transparent; }
-  .hint{
-    margin-top:8px;
-    font-size: 12px;
-    color: rgba(30,27,22,0.60);
-  }
-
-  @media (max-width: 840px){
-    .panel{
-      right: 10px;
-      left: 10px;
-      width: auto;
-      top: 10px;
-      bottom: 10px;
+      --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
-  }
-</style>
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color: var(--parch);
+      background:
+        radial-gradient(1200px 700px at 20% 15%, rgba(176,141,87,0.12), transparent 55%),
+        radial-gradient(1000px 700px at 85% 70%, rgba(46,74,63,0.10), transparent 55%),
+        linear-gradient(180deg, var(--wall), var(--wall2));
+    }
+
+    /* Top-level page container */
+    .page{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 26px 18px 40px;
+    }
+
+    /* Header */
+    header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .titleBlock h1{
+      margin:0;
+      font-family: var(--serif);
+      font-size: 42px;
+      letter-spacing: 0.4px;
+      line-height:1.05;
+      color: var(--parch);
+    }
+    .titleBlock p{
+      margin: 8px 0 0;
+      color: rgba(241,230,210,0.84);
+      line-height:1.45;
+      max-width: 720px;
+      font-size: 15px;
+    }
+    .tagline{
+      margin-top: 6px;
+      font-weight: 650;
+      color: rgba(241,230,210,0.90);
+      font-size: 14px;
+    }
+
+    /* Brass button */
+    .btn{
+      appearance:none;
+      border: 1px solid rgba(176,141,87,0.55);
+      background:
+        linear-gradient(180deg, rgba(176,141,87,0.22), rgba(176,141,87,0.10));
+      color: var(--parch);
+      padding: 12px 14px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 750;
+      letter-spacing: 0.2px;
+      box-shadow: var(--shadowSoft);
+      white-space:nowrap;
+    }
+    .btn:hover{
+      background:
+        linear-gradient(180deg, rgba(176,141,87,0.28), rgba(176,141,87,0.12));
+    }
+
+    /* “Plaque” card */
+    .plaque{
+      background: rgba(241,230,210,0.96);
+      color: var(--ink);
+      border: 1px solid rgba(241,230,210,0.25);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    /* Map container */
+    .mapWrap{
+      margin-top: 14px;
+      padding: 14px;
+    }
+    .mapFrame{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background:
+        radial-gradient(800px 420px at 30% 25%, rgba(176,141,87,0.10), transparent 60%),
+        linear-gradient(180deg, rgba(231,214,181,0.55), rgba(241,230,210,0.85));
+      overflow:hidden;
+      position:relative;
+      height: min(520px, 58vh);
+    }
+
+    /* Map placeholder “paper map” */
+    #map{
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(900px 520px at 20% 25%, rgba(46,74,63,0.10), transparent 55%),
+        radial-gradient(900px 520px at 80% 70%, rgba(122,46,46,0.08), transparent 55%),
+        linear-gradient(180deg, rgba(241,230,210,0.94), rgba(231,214,181,0.92));
+    }
+    /* subtle grid texture */
+    #map::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:
+        linear-gradient(rgba(27,23,18,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(27,23,18,0.04) 1px, transparent 1px);
+      background-size: 62px 62px;
+      opacity: 0.22;
+      pointer-events:none;
+    }
+
+    /* tiny label */
+    .mapLabel{
+      position:absolute;
+      top: 12px;
+      left: 12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(27,23,18,0.18);
+      background: rgba(241,230,210,0.68);
+      font-size: 12px;
+      color: rgba(27,23,18,0.78);
+      display:flex;
+      gap:8px;
+      align-items:center;
+      backdrop-filter: blur(4px);
+    }
+    .pinDot{
+      width:8px;
+      height:8px;
+      border-radius: 99px;
+      background: var(--wax);
+      box-shadow: 0 0 0 6px rgba(122,46,46,0.12);
+    }
+
+    /* Sample pins (Phase 1 mock) */
+    .pin{
+      position:absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 99px;
+      background: var(--wax);
+      box-shadow: 0 0 0 7px rgba(122,46,46,0.14);
+      cursor:pointer;
+      border: 1px solid rgba(27,23,18,0.18);
+    }
+    .pin:hover{
+      transform: scale(1.05);
+    }
+
+    /* Map tooltip */
+    .tip{
+      position:absolute;
+      min-width: 220px;
+      max-width: 280px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(27,23,18,0.18);
+      background: rgba(241,230,210,0.92);
+      color: var(--ink);
+      box-shadow: var(--shadowSoft);
+      display:none;
+      pointer-events:none;
+    }
+    .tip strong{ display:block; font-size: 14px; }
+    .tip small{ display:block; margin-top:4px; color: rgba(27,23,18,0.65); line-height:1.35; }
+
+    /* Below-map layout */
+    .below{
+      display:grid;
+      grid-template-columns: 1.4fr 0.9fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 980px){
+      .below{ grid-template-columns: 1fr; }
+    }
+
+    /* Section headers inside plaques */
+    .sectionHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid rgba(27,23,18,0.10);
+      background: rgba(255,255,255,0.22);
+    }
+    .sectionHeader h2{
+      margin:0;
+      font-family: var(--serif);
+      font-size: 18px;
+      color: var(--ink);
+      letter-spacing: 0.2px;
+    }
+    .sectionHeader .sub{
+      font-size: 12px;
+      color: rgba(27,23,18,0.62);
+    }
+
+    /* Controls */
+    .controls{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 12px 14px 0;
+    }
+    .search{
+      flex: 1 1 260px;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      border: 1px solid rgba(27,23,18,0.16);
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.35);
+    }
+    .search input{
+      width:100%;
+      border:none;
+      outline:none;
+      background: transparent;
+      color: var(--ink);
+      font-size: 14px;
+    }
+    .chipRow{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .chip{
+      border: 1px solid rgba(27,23,18,0.16);
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.24);
+      color: rgba(27,23,18,0.72);
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip.active{
+      border-color: rgba(176,141,87,0.65);
+      background: rgba(176,141,87,0.18);
+      color: rgba(27,23,18,0.86);
+      font-weight: 700;
+    }
+
+    /* Lists */
+    .list{
+      padding: 10px 10px 14px;
+      max-height: 420px;
+      overflow:auto;
+    }
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+    }
+    .row:hover{
+      border-color: rgba(27,23,18,0.14);
+      background: rgba(27,23,18,0.03);
+    }
+    .left{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width:0;
+    }
+    .icon{
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      border: 1px solid rgba(27,23,18,0.14);
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,0.22);
+      flex: 0 0 auto;
+    }
+    .name{
+      font-weight: 800;
+      color: var(--ink);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 340px;
+    }
+    .meta{
+      font-size: 12px;
+      color: rgba(27,23,18,0.62);
+      margin-top: 2px;
+    }
+
+    /* Status badges */
+    .badge{
+      flex: 0 0 auto;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(27,23,18,0.14);
+      background: rgba(255,255,255,0.22);
+      color: rgba(27,23,18,0.70);
+      white-space:nowrap;
+      font-weight: 750;
+      letter-spacing: 0.2px;
+    }
+    .claimed{ border-color: rgba(176,141,87,0.55); background: rgba(176,141,87,0.16); }
+    .pending{ border-color: rgba(122,46,46,0.55); background: rgba(122,46,46,0.12); }
+    .unclaimed{ border-color: rgba(46,74,63,0.40); background: rgba(46,74,63,0.10); }
+
+    /* Hall of Legends */
+    .trophyList{
+      padding: 10px 10px 14px;
+    }
+    .trophy{
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(27,23,18,0.12);
+      background: rgba(255,255,255,0.20);
+      margin: 10px 4px;
+    }
+    .trophyTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .trophyTitle{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      font-weight: 900;
+      color: var(--ink);
+    }
+    .trophyTitle span{ font-size: 18px; }
+    .holder{
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(27,23,18,0.12);
+      background: rgba(255,255,255,0.24);
+      color: rgba(27,23,18,0.80);
+      white-space:nowrap;
+    }
+    .trophyMeta{
+      margin-top: 8px;
+      font-size: 13px;
+      color: rgba(27,23,18,0.72);
+      line-height:1.35;
+    }
+    .trophyMeta b{
+      color: rgba(27,23,18,0.92);
+    }
+
+    /* Modal */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background: rgba(0,0,0,0.55);
+    }
+    .modal{
+      width: min(560px, 96vw);
+      border-radius: var(--radius);
+      background: rgba(241,230,210,0.96);
+      color: var(--ink);
+      border: 1px solid rgba(27,23,18,0.16);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .modal h3{
+      margin: 0 0 8px;
+      font-family: var(--serif);
+      font-size: 18px;
+    }
+    .modal p{
+      margin: 0 0 12px;
+      color: rgba(27,23,18,0.68);
+      line-height:1.5;
+      font-size: 14px;
+    }
+    .monoBox{
+      font-family: var(--mono);
+      font-size: 12px;
+      background: rgba(255,255,255,0.35);
+      border: 1px solid rgba(27,23,18,0.16);
+      border-radius: 14px;
+      padding: 10px;
+      white-space: pre-wrap;
+    }
+    .modalActions{
+      display:flex;
+      gap:10px;
+      margin-top: 12px;
+    }
+    .btnGhost{
+      background: transparent;
+      border: 1px solid rgba(27,23,18,0.16);
+      color: rgba(27,23,18,0.86);
+      box-shadow:none;
+    }
   </style>
 </head>
 
 <body>
-  <div id="map">
-    <!-- Placeholder shown until Google Maps is loaded -->
-    <div class="map-placeholder" id="mapPlaceholder">
-      <div class="box">
-        <h1>The Big Hop — Map Preview</h1>
-        <p>This is the Phase 1 layout shell. Next, we’ll wire in Google Maps + sample pins.</p>
-        <p>Once the map is live, each hop becomes a permanent pin with an alias, location, and distance.</p>
-        <div class="pill"><span class="dot"></span> Waiting for map engine</div>
+  <div class="page">
+
+    <header>
+      <div class="titleBlock">
+        <h1>The Big Hop</h1>
+        <p>A message that travels the world—one hop at a time. Each confirmed hop becomes a permanent pin: a city, a moment, a mark left behind.</p>
+        <div class="tagline">Move the message. Leave your mark. Join the hop.</div>
       </div>
+      <button class="btn" id="moveBtn">Move the Message</button>
+    </header>
+
+    <!-- Map plaque -->
+    <div class="plaque mapWrap">
+      <div class="mapFrame">
+        <div id="map"></div>
+
+        <div class="mapLabel">
+          <span class="pinDot"></span>
+          Journey Map (Phase 1 preview)
+        </div>
+
+        <!-- sample pins (rough world positions just for vibe) -->
+        <div class="pin" data-title="Hop #1 — Vancouver Island" data-sub="Alias: northstar · 7,542 km" style="left:18%; top:44%;"></div>
+        <div class="pin" data-title="Hop #2 — Tokyo" data-sub="Alias: paperplane · 8,916 km" style="left:78%; top:42%;"></div>
+        <div class="pin" data-title="Hop #3 — Berlin" data-sub="Alias: quietatlas · 9,240 km" style="left:56%; top:36%;"></div>
+        <div class="pin" data-title="Hop #4 — Cape Town" data-sub="Alias: quietatlas · 9,240 km" style="left:56%; top:68%;"></div>
+
+        <div class="tip" id="tip">
+          <strong id="tipTitle">Hop</strong>
+          <small id="tipSub">Details</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Below map -->
+    <div class="below">
+
+      <!-- Legendary Locations -->
+      <div class="plaque">
+        <div class="sectionHeader">
+          <div>
+            <h2>Legendary Locations</h2>
+            <div class="sub">Claimable landmarks. Claimed titles are held until someone else gets there.</div>
+          </div>
+          <div class="sub">Up to 50</div>
+        </div>
+
+        <div class="controls">
+          <div class="search" aria-label="search legendary locations">
+            🔎
+            <input id="searchBox" placeholder="Search: Antarctica, White House, Eiffel Tower…" />
+          </div>
+          <div class="chipRow" id="chips">
+            <div class="chip active" data-filter="all">All</div>
+            <div class="chip" data-filter="unclaimed">Unclaimed</div>
+            <div class="chip" data-filter="claimed">Claimed</div>
+            <div class="chip" data-filter="pending">Pending</div>
+          </div>
+        </div>
+
+        <div class="list" id="legendList">
+          <!-- sample rows -->
+          <div class="row" data-status="claimed">
+            <div class="left">
+              <div class="icon">🏛️</div>
+              <div>
+                <div class="name">The White House</div>
+                <div class="meta">Held by <span class="holder">POTUS_47</span></div>
+              </div>
+            </div>
+            <div class="badge claimed">CLAIMED</div>
+          </div>
+
+          <div class="row" data-status="unclaimed">
+            <div class="left">
+              <div class="icon">❄️</div>
+              <div>
+                <div class="name">Antarctica</div>
+                <div class="meta">No current holder</div>
+              </div>
+            </div>
+            <div class="badge unclaimed">UNCLAIMED</div>
+          </div>
+
+          <div class="row" data-status="pending">
+            <div class="left">
+              <div class="icon">🗼</div>
+              <div>
+                <div class="name">Eiffel Tower</div>
+                <div class="meta">Submitted by <span class="holder">quietatlas</span></div>
+              </div>
+            </div>
+            <div class="badge pending">PENDING</div>
+          </div>
+
+          <div class="row" data-status="claimed">
+            <div class="left">
+              <div class="icon">🗽</div>
+              <div>
+                <div class="name">Statue of Liberty</div>
+                <div class="meta">Held by <span class="holder">northstar</span></div>
+              </div>
+            </div>
+            <div class="badge claimed">CLAIMED</div>
+          </div>
+
+          <div class="row" data-status="unclaimed">
+            <div class="left">
+              <div class="icon">🏔️</div>
+              <div>
+                <div class="name">Mount Everest</div>
+                <div class="meta">No current holder</div>
+              </div>
+            </div>
+            <div class="badge unclaimed">UNCLAIMED</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hall of Legends -->
+      <div class="plaque">
+        <div class="sectionHeader">
+          <div>
+            <h2>Hall of Legends</h2>
+            <div class="sub">Quick-glance achievements and current holders</div>
+          </div>
+        </div>
+
+        <div class="trophyList">
+          <div class="trophy">
+            <div class="trophyTop">
+              <div class="trophyTitle"><span>🏆</span> Most Hops</div>
+              <div class="holder">northstar</div>
+            </div>
+            <div class="trophyMeta"><b>14</b> hops</div>
+          </div>
+
+          <div class="trophy">
+            <div class="trophyTop">
+              <div class="trophyTitle"><span>🧭</span> Biggest Hop</div>
+              <div class="holder">quietatlas</div>
+            </div>
+            <div class="trophyMeta"><b>9,240 km</b> · Berlin → Cape Town</div>
+          </div>
+
+          <div class="trophy">
+            <div class="trophyTop">
+              <div class="trophyTitle"><span>🌍</span> Around the World</div>
+              <div class="holder">paperplane</div>
+            </div>
+            <div class="trophyMeta"><b>Achieved</b> · 40,075 km total</div>
+          </div>
+
+          <div class="trophy">
+            <div class="trophyTop">
+              <div class="trophyTitle"><span>🏛️</span> Landmark Hunter</div>
+              <div class="holder">northstar</div>
+            </div>
+            <div class="trophyMeta"><b>3</b> legendary locations claimed</div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <aside class="panel" aria-label="The Big Hop panel">
-    <div class="panel-header">
-      <div class="brand">
-        <div>
-          <h2>The Big Hop</h2>
-          <small>A message that travels the world—one hop at a time.</small>
-          <div class="tagline">Move the message. Leave your mark. Join the hop.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel-body">
-      <section class="section" id="travelLedger">
-        <h3>Travel Ledger</h3>
-
-        <!-- Sample entries (Phase 1 mock data) -->
-        <div class="row">
-          <div>
-            <strong>Hop #1</strong><span> · Vancouver Island → Tokyo</span>
-            <div class="meta">Alias: <span class="mono">northstar</span> · Distance: 7,542 km · Date: 2026-02-08</div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <strong>Hop #2</strong><span> · Tokyo → Berlin</span>
-            <div class="meta">Alias: <span class="mono">paperplane</span> · Distance: 8,916 km · Date: 2026-02-09</div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <strong>Hop #3</strong><span> · Berlin → Cape Town</span>
-            <div class="meta">Alias: <span class="mono">quietatlas</span> · Distance: 9,240 km · Date: 2026-02-10</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <h3>Hall of Legends</h3>
-        <div class="stat-grid">
-          <div class="stat">
-            <div class="k">Total hops</div>
-            <div class="v">3</div>
-          </div>
-          <div class="stat">
-            <div class="k">Total distance</div>
-            <div class="v">25,698 km</div>
-          </div>
-          <div class="stat">
-            <div class="k">Longest hop</div>
-            <div class="v">9,240 km</div>
-          </div>
-          <div class="stat">
-            <div class="k">Current holder</div>
-            <div class="v">quietatlas</div>
-          </div>
-        </div>
-        <p class="hint">This isn’t about spending. It’s about movement, discovery, and leaving a mark.</p>
-      </section>
-
-      <section class="section">
-        <h3>Legendary Destinations</h3>
-
-        <div class="dest">
-          <div class="left">
-            <div class="badge">🏛️</div>
-            <div class="name">The White House</div>
-          </div>
-          <div class="status">Unclaimed</div>
-        </div>
-
-        <div class="dest">
-          <div class="left">
-            <div class="badge">❄️</div>
-            <div class="name">Antarctica</div>
-          </div>
-          <div class="status">Unclaimed</div>
-        </div>
-
-        <div class="dest">
-          <div class="left">
-            <div class="badge">🌕</div>
-            <div class="name">The Moon (symbolic)</div>
-          </div>
-          <div class="status">Locked</div>
-        </div>
-
-        <p class="hint">Later: these will be geofenced locations that can be claimed (with verification).</p>
-      </section>
-    </div>
-
-    <div class="panel-footer">
-      <button id="moveBtn">Move the Message</button>
-      <button id="aboutBtn" class="ghost">About</button>
-    </div>
-  </aside>
-
-  <!-- Modal -->
+  <!-- Move modal -->
   <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal">
-      <h4 id="modalTitle">Move the Message</h4>
-      <p id="modalText">
-        This is Phase 1 (visual prototype). Soon, a real Bitcoin transaction will create a verified hop and drop a permanent pin on the map.
-      </p>
-      <div class="mono" id="modalBox">
-        Bitcoin Address (placeholder):
-        bc1qexampleaddress000000000000000000000000000000
-      </div>
-      <div class="hint">Next phase: confirmations, hop validation, distance calculation, and a real travel ledger.</div>
-      <div class="actions">
-        <button id="closeBtn" class="ghost">Close</button>
-        <button id="copyBtn">Copy Address</button>
+      <h3>Move the Message</h3>
+      <p>This is Phase 1 (design proof). Soon, a confirmed transaction will create a verified hop and drop a permanent pin on the map with your alias, location, and distance.</p>
+      <div class="monoBox" id="addrBox">Bitcoin Address (placeholder):
+bc1qexampleaddress000000000000000000000000000000</div>
+      <div class="modalActions">
+        <button class="btn btnGhost" id="closeBtn">Close</button>
+        <button class="btn" id="copyBtn">Copy Address</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Phase 1 modal interactions
+    // --- Map tooltip on sample pins (Phase 1) ---
+    const tip = document.getElementById('tip');
+    const tipTitle = document.getElementById('tipTitle');
+    const tipSub = document.getElementById('tipSub');
+
+    document.querySelectorAll('.pin').forEach(pin => {
+      pin.addEventListener('mouseenter', (e) => {
+        tipTitle.textContent = pin.dataset.title || 'Hop';
+        tipSub.textContent = pin.dataset.sub || '';
+        tip.style.display = 'block';
+
+        const r = pin.getBoundingClientRect();
+        // position tooltip near the pin (within mapFrame)
+        const parent = pin.parentElement.getBoundingClientRect();
+        const left = (r.left - parent.left) + 14;
+        const top  = (r.top  - parent.top)  - 8;
+
+        tip.style.left = Math.min(left, parent.width - 290) + 'px';
+        tip.style.top  = Math.max(top - 40, 12) + 'px';
+      });
+
+      pin.addEventListener('mouseleave', () => {
+        tip.style.display = 'none';
+      });
+    });
+
+    // --- Legendary list filtering ---
+    const searchBox = document.getElementById('searchBox');
+    const chips = document.getElementById('chips');
+    const rows = Array.from(document.querySelectorAll('#legendList .row'));
+    let activeFilter = 'all';
+
+    function applyFilters(){
+      const q = (searchBox.value || '').trim().toLowerCase();
+      rows.forEach(row => {
+        const status = row.dataset.status;
+        const text = row.innerText.toLowerCase();
+        const okFilter = (activeFilter === 'all') ? true : (status === activeFilter);
+        const okSearch = q ? text.includes(q) : true;
+        row.style.display = (okFilter && okSearch) ? 'flex' : 'none';
+      });
+    }
+
+    chips.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip');
+      if(!chip) return;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeFilter = chip.dataset.filter;
+      applyFilters();
+    });
+    searchBox.addEventListener('input', applyFilters);
+
+    // --- Modal ---
     const backdrop = document.getElementById('modalBackdrop');
     const moveBtn = document.getElementById('moveBtn');
-    const aboutBtn = document.getElementById('aboutBtn');
     const closeBtn = document.getElementById('closeBtn');
     const copyBtn = document.getElementById('copyBtn');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalText = document.getElementById('modalText');
-    const modalBox = document.getElementById('modalBox');
 
-    function openModal(kind){
+    function openModal(){
       backdrop.style.display = 'flex';
-      backdrop.setAttribute('aria-hidden', 'false');
-
-      if(kind === 'about'){
-        modalTitle.textContent = 'About The Big Hop';
-        modalText.textContent = 'The Big Hop is a collaborative journey where the message only moves when someone performs a real, verifiable action. Each hop becomes a permanent mark on the map.';
-        modalBox.textContent = 'Phase 1: Layout + experience preview (no live transactions yet).';
-        copyBtn.style.display = 'none';
-      }else{
-        modalTitle.textContent = 'Move the Message';
-        modalText.textContent = 'Phase 1 prototype. Soon, a confirmed transaction will create a verified hop and drop a pin on the map with your alias, location, and distance.';
-        modalBox.textContent = 'Bitcoin Address (placeholder):\n' +
-          'bc1qexampleaddress000000000000000000000000000000';
-        copyBtn.style.display = 'inline-block';
-      }
+      backdrop.setAttribute('aria-hidden','false');
     }
-
     function closeModal(){
       backdrop.style.display = 'none';
-      backdrop.setAttribute('aria-hidden', 'true');
+      backdrop.setAttribute('aria-hidden','true');
     }
-
-    moveBtn.addEventListener('click', () => openModal('move'));
-    aboutBtn.addEventListener('click', () => openModal('about'));
+    moveBtn.addEventListener('click', openModal);
     closeBtn.addEventListener('click', closeModal);
     backdrop.addEventListener('click', (e) => { if(e.target === backdrop) closeModal(); });
 
@@ -511,52 +704,11 @@
         await navigator.clipboard.writeText(text);
         copyBtn.textContent = 'Copied';
         setTimeout(()=> copyBtn.textContent = 'Copy Address', 1200);
-      }catch(err){
+      }catch{
         copyBtn.textContent = 'Copy failed';
         setTimeout(()=> copyBtn.textContent = 'Copy Address', 1200);
       }
     });
-
-    // Optional: Load Google Maps if you add a key later.
-    // For Phase 1, this is fine to leave inactive until you have an API key.
-    const GOOGLE_MAPS_API_KEY = ""; // <-- later: paste your key here
-    const placeholder = document.getElementById('mapPlaceholder');
-
-    if(GOOGLE_MAPS_API_KEY){
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initMap`;
-      script.async = true;
-      window.initMap = function(){
-        // Basic map setup (we'll enhance next step with pins + styling)
-        const center = { lat: 20, lng: 0 };
-        const map = new google.maps.Map(document.getElementById('map'), {
-          center,
-          zoom: 2,
-          disableDefaultUI: true,
-          gestureHandling: "greedy"
-        });
-
-        // Hide placeholder once map loads
-        placeholder.style.display = 'none';
-
-        // Sample pins (Phase 1 mock)
-        const hops = [
-          { title: "Hop #1 — Vancouver Island", pos: { lat: 48.4284, lng: -123.3656 } },
-          { title: "Hop #2 — Tokyo", pos: { lat: 35.6762, lng: 139.6503 } },
-          { title: "Hop #3 — Berlin", pos: { lat: 52.5200, lng: 13.4050 } },
-          { title: "Hop #4 — Cape Town", pos: { lat: -33.9249, lng: 18.4241 } },
-        ];
-
-        hops.forEach(h => {
-          new google.maps.Marker({
-            position: h.pos,
-            map,
-            title: h.title
-          });
-        });
-      };
-      document.head.appendChild(script);
-    }
   </script>
 </body>
 </html>
