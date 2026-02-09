@@ -3,822 +3,429 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>The Big Hop</title>
-
+  <title>The Big Hop. 🌎</title>
   <style>
     :root{
-      /* Museum / artifact palette */
-      --wall: #14110D;        /* dark gallery wall */
-      --wall2:#0F0D0A;
-      --ink:  #1B1712;        /* dark ink */
-      --parch: #F1E6D2;       /* parchment */
-      --paper: #E7D6B5;       /* aged paper */
-      --line: rgba(27,23,18,0.18);
-      --muted: rgba(27,23,18,0.66);
-      --brass:#B08D57;        /* brass accent */
-      --wax:  #7A2E2E;        /* wax seal red */
-      --moss: #2E4A3F;        /* oxidized green */
-
-      --radius: 18px;
-      --shadow: 0 22px 70px rgba(0,0,0,0.35);
-      --shadowSoft: 0 12px 40px rgba(0,0,0,0.22);
-
-      --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+      --bg0:#0b0c0f;
+      --bg1:#07080a;
+      --card:#fbfbfa;
+      --ink:#141518;
+      --mut:rgba(20,21,24,.62);
+      --line:rgba(20,21,24,.12);
+      --soft:rgba(255,255,255,.10);
+      --softLine:rgba(255,255,255,.14);
+      --accent:#B89B5E;
+      --r:18px;
+      --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
       --sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: var(--sans);
-      color: var(--parch);
-      background:
-        radial-gradient(1200px 700px at 20% 15%, rgba(176,141,87,0.12), transparent 55%),
-        radial-gradient(1000px 700px at 85% 70%, rgba(46,74,63,0.10), transparent 55%),
-        linear-gradient(180deg, var(--wall), var(--wall2));
+      font-family:var(--sans);
+      background:linear-gradient(180deg,var(--bg0),var(--bg1));
+      color:#eef0f4;
     }
-
-    /* Top-level page container */
-    .page{
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 26px 18px 40px;
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:22px 16px 36px;
     }
 
     /* Header */
-    header{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap: 16px;
-  margin-bottom: 18px;
-  text-align:center;
-  flex-direction: column;
-}
+    .hero{
+      text-align:center;
+      margin-bottom:14px;
     }
-    .titleBlock h1{
+    .hero h1{
       margin:0;
-      font-family: var(--serif);
-      font-size: 44px;
-      letter-spacing: 0.4px;
-      line-height:1.05;
-      color: var(--parch);
+      font:800 46px/1.05 var(--serif);
+      letter-spacing:.2px;
     }
-    .titleBlock p{
-      margin: 8px 0 0;
-      color: rgba(241,230,210,0.84);
-      line-height:1.45;
-      max-width: 720px;
-      font-size: 15px;
-    }
-    .tagline{
-      margin-top: 6px;
-      font-weight: 650;
-      color: rgba(241,230,210,0.90);
-      font-size: 14px;
+    .hero p{
+      margin:10px auto 0;
+      max-width:820px;
+      color:rgba(238,240,244,.72);
+      line-height:1.55;
     }
 
-    /* Brass button */
-    .btn{
-      appearance:none;
-      border: 1px solid rgba(176,141,87,0.55);
-      background:
-        linear-gradient(180deg, rgba(176,141,87,0.22), rgba(176,141,87,0.10));
-      color: var(--parch);
-      padding: 12px 14px;
-      border-radius: 14px;
-      cursor:pointer;
-      font-weight: 750;
-      letter-spacing: 0.2px;
-      box-shadow: var(--shadowSoft);
-      white-space:nowrap;
-    }
-    .btn:hover{
-      background:
-        linear-gradient(180deg, rgba(176,141,87,0.28), rgba(176,141,87,0.12));
-    }
-
-    /* “Plaque” card */
-    .plaque{
-      background: rgba(241,230,210,0.96);
-      color: var(--ink);
-      border: 1px solid rgba(241,230,210,0.25);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+    /* Map Shell */
+    .mapShell{
+      border-radius:22px;
       overflow:hidden;
-    }
-
-    /* Map container */
-    .mapWrap{
-      margin-top: 14px;
-      padding: 14px;
-    }
-    .mapFrame{
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background:
-        radial-gradient(800px 420px at 30% 25%, rgba(176,141,87,0.10), transparent 60%),
-        linear-gradient(180deg, rgba(231,214,181,0.55), rgba(241,230,210,0.85));
-      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:0 22px 70px rgba(0,0,0,.45);
+      background:linear-gradient(180deg,#f4f6fa,#eef2f7);
       position:relative;
-      height: min(520px, 58vh);
+      height:min(560px,60vh);
     }
-
-    /* Map placeholder “paper map” */
-    #map{
-      position:absolute;
-      inset:0;
-      background:
-        radial-gradient(900px 520px at 20% 25%, rgba(46,74,63,0.10), transparent 55%),
-        radial-gradient(900px 520px at 80% 70%, rgba(122,46,46,0.08), transparent 55%),
-        linear-gradient(180deg, rgba(241,230,210,0.94), rgba(231,214,181,0.92));
-    }
-    /* subtle grid texture */
-    #map::before{
+    /* Faux “map” look so it doesn’t feel blank */
+    .mapShell::before{
       content:"";
-      position:absolute;
-      inset:0;
-      background-image:
-        linear-gradient(rgba(27,23,18,0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(27,23,18,0.04) 1px, transparent 1px);
-      background-size: 62px 62px;
-      opacity: 0.22;
+      position:absolute; inset:0;
+      background:
+        radial-gradient(900px 520px at 28% 30%, rgba(184,155,94,.14), transparent 60%),
+        radial-gradient(900px 520px at 78% 70%, rgba(20,21,24,.05), transparent 60%);
       pointer-events:none;
     }
-
-    /* tiny label */
-    .mapLabel{
+    .mapTopTag{
       position:absolute;
-      top: 12px;
-      left: 12px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(27,23,18,0.18);
-      background: rgba(241,230,210,0.68);
-      font-size: 12px;
-      color: rgba(27,23,18,0.78);
-      display:flex;
-      gap:8px;
-      align-items:center;
-      backdrop-filter: blur(4px);
-    }
-    .pinDot{
-      width:8px;
-      height:8px;
-      border-radius: 99px;
-      background: var(--wax);
-      box-shadow: 0 0 0 6px rgba(122,46,46,0.12);
+      left:14px; top:14px;
+      background:rgba(255,255,255,.82);
+      color:rgba(20,21,24,.72);
+      border:1px solid rgba(20,21,24,.10);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      backdrop-filter: blur(6px);
     }
 
-    /* Sample pins (Phase 1 mock) */
+    /* Pins (static visual) */
     .pin{
       position:absolute;
-      width: 12px;
-      height: 12px;
-      border-radius: 99px;
-      background: var(--wax);
-      box-shadow: 0 0 0 7px rgba(122,46,46,0.14);
-      cursor:pointer;
-      border: 1px solid rgba(27,23,18,0.18);
-    }
-    .pin:hover{
-      transform: scale(1.05);
+      width:12px; height:12px;
+      border-radius:50%;
+      background:#7a2e2e;
+      border:1px solid rgba(20,21,24,.18);
+      box-shadow:0 0 0 8px rgba(122,46,46,.14);
     }
 
-    /* Map tooltip */
-    .tip{
+    /* Bottom overlay bar inside map */
+    .mapBar{
       position:absolute;
-      min-width: 220px;
-      max-width: 280px;
-      padding: 10px 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(27,23,18,0.18);
-      background: rgba(241,230,210,0.92);
-      color: var(--ink);
-      box-shadow: var(--shadowSoft);
-      display:none;
-      pointer-events:none;
-    }
-    .tip strong{ display:block; font-size: 14px; }
-    .tip small{ display:block; margin-top:4px; color: rgba(27,23,18,0.65); line-height:1.35; }
-
-    /* Below-map layout */
-    .below{
-      display:grid;
-      grid-template-columns: 1.4fr 0.9fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-    @media (max-width: 980px){
-      .below{ grid-template-columns: 1fr; }
-    }
-
-    /* Section headers inside plaques */
-    .sectionHeader{
+      left:12px; right:12px; bottom:12px;
       display:flex;
+      gap:10px;
       align-items:center;
       justify-content:space-between;
-      gap: 10px;
-      padding: 14px 14px 10px;
-      border-bottom: 1px solid rgba(27,23,18,0.10);
-      background: rgba(255,255,255,0.22);
+      padding:10px 10px;
+      border-radius:16px;
+      background:rgba(10,10,12,.72);
+      border:1px solid var(--softLine);
+      backdrop-filter: blur(10px);
     }
-    .sectionHeader h2{
-      margin:0;
-      font-family: var(--serif);
-      font-size: 18px;
-      color: var(--ink);
-      letter-spacing: 0.2px;
-    }
-    .sectionHeader .sub{
-      font-size: 12px;
-      color: rgba(27,23,18,0.62);
-    }
-
-    /* Controls */
-    .controls{
+    .mapBarLeft{
       display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding: 12px 14px 0;
-    }
-    .search{
-      flex: 1 1 260px;
-      display:flex;
+      gap:10px;
       align-items:center;
-      gap: 8px;
-      border: 1px solid rgba(27,23,18,0.16);
-      border-radius: 14px;
-      padding: 10px 12px;
-      background: rgba(255,255,255,0.35);
-    }
-    .search input{
-      width:100%;
-      border:none;
-      outline:none;
-      background: transparent;
-      color: var(--ink);
-      font-size: 14px;
-    }
-    .chipRow{
-      display:flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      min-width:0;
+      flex-wrap:wrap;
     }
     .chip{
-      border: 1px solid rgba(27,23,18,0.16);
-      border-radius: 999px;
-      padding: 8px 10px;
-      font-size: 12px;
-      background: rgba(255,255,255,0.24);
-      color: rgba(27,23,18,0.72);
-      cursor:pointer;
-      user-select:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      color:rgba(238,240,244,.92);
+      font-size:12px;
+      white-space:nowrap;
     }
-    .chip.active{
-      border-color: rgba(176,141,87,0.65);
-      background: rgba(176,141,87,0.18);
-      color: rgba(27,23,18,0.86);
-      font-weight: 700;
+    .chip b{font-weight:800}
+    .moveBtn{
+      border:1px solid rgba(184,155,94,.55);
+      background:rgba(184,155,94,.18);
+      color:#fff;
+      font-weight:800;
+      padding:10px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      white-space:nowrap;
     }
 
-    /* Lists */
-    .list{
-      padding: 10px 10px 14px;
-      max-height: 420px;
-      overflow:auto;
+    /* Under-map columns (2 only) */
+    .columns{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 1.05fr 1.45fr;
+      gap:14px;
     }
+    @media (max-width: 980px){
+      .columns{grid-template-columns:1fr}
+    }
+
+    .card{
+      background:var(--card);
+      color:var(--ink);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      overflow:hidden;
+      box-shadow:0 10px 34px rgba(0,0,0,.18);
+      min-height:460px;
+      display:flex;
+      flex-direction:column;
+    }
+    .cardHead{
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.18);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:baseline;
+    }
+    .cardHead h2{
+      margin:0;
+      font:800 18px var(--serif);
+    }
+    .sub{
+      margin-top:3px;
+      font-size:12px;
+      color:rgba(20,21,24,.55);
+    }
+    .scroll{
+      padding:10px;
+      overflow:auto;
+      flex:1;
+    }
+
+    /* Search */
+    .searchRow{
+      padding:10px 10px 0;
+    }
+    .search{
+      width:100%;
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:13px;
+      outline:none;
+    }
+
+    /* Rows */
     .row{
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      gap: 12px;
-      padding: 10px 10px;
-      border-radius: 14px;
-      border: 1px solid transparent;
+      gap:12px;
+      padding:10px;
+      border-radius:14px;
+      align-items:center;
     }
-    .row:hover{
-      border-color: rgba(27,23,18,0.14);
-      background: rgba(27,23,18,0.03);
-    }
+    .row:hover{background:rgba(20,21,24,.03)}
     .left{
       display:flex;
+      gap:10px;
       align-items:center;
-      gap: 10px;
       min-width:0;
     }
-    /* Travel Ledger (bottom event log) */
-.ledger{
-  margin-top: 16px;
-}
-.ledgerTable{
-  width:100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-.ledgerTable th, .ledgerTable td{
-  padding: 10px 10px;
-  border-bottom: 1px solid rgba(27,23,18,0.10);
-  vertical-align: top;
-}
-.ledgerTable th{
-  text-align:left;
-  font-family: var(--serif);
-  font-size: 14px;
-  color: rgba(27,23,18,0.78);
-}
-.ledgerTable td{
-  color: rgba(27,23,18,0.78);
-}
-.ledgerMono{
-  font-family: var(--mono);
-  font-size: 12px;
-  color: rgba(27,23,18,0.78);
-}
-.km{
-  white-space:nowrap;
-  font-weight: 800;
-  color: rgba(27,23,18,0.90);
-}
-.smallmuted{
-  color: rgba(27,23,18,0.60);
-  font-size: 12px;
-  margin-top: 3px;
-}
-    .icon{
-      width: 30px;
-      height: 30px;
-      border-radius: 10px;
-      border: 1px solid rgba(27,23,18,0.14);
+    .ico{
+      width:32px; height:32px;
+      border-radius:12px;
+      border:1px solid var(--line);
       display:grid;
       place-items:center;
-      background: rgba(255,255,255,0.22);
-      flex: 0 0 auto;
+      background:rgba(255,255,255,.22);
+      flex:0 0 auto;
     }
     .name{
-      font-weight: 800;
-      color: var(--ink);
+      font-weight:900;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width: 340px;
     }
     .meta{
-      font-size: 12px;
-      color: rgba(27,23,18,0.62);
-      margin-top: 2px;
-    }
-
-    /* Status badges */
-    .badge{
-      flex: 0 0 auto;
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(27,23,18,0.14);
-      background: rgba(255,255,255,0.22);
-      color: rgba(27,23,18,0.70);
+      font-size:12px;
+      color:rgba(20,21,24,.62);
+      margin-top:2px;
       white-space:nowrap;
-      font-weight: 750;
-      letter-spacing: 0.2px;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
-    .claimed{ border-color: rgba(176,141,87,0.55); background: rgba(176,141,87,0.16); }
-    .pending{ border-color: rgba(122,46,46,0.55); background: rgba(122,46,46,0.12); }
-    .unclaimed{ border-color: rgba(46,74,63,0.40); background: rgba(46,74,63,0.10); }
-
-    /* Hall of Legends */
-    .trophyList{
-      padding: 10px 10px 14px;
-    }
-    .trophy{
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(27,23,18,0.12);
-      background: rgba(255,255,255,0.20);
-      margin: 10px 4px;
-    }
-    .trophyTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-    }
-    .trophyTitle{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      font-weight: 900;
-      color: var(--ink);
-    }
-    .trophyTitle span{ font-size: 18px; }
-    .holder{
-      font-family: var(--mono);
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(27,23,18,0.12);
-      background: rgba(255,255,255,0.24);
-      color: rgba(27,23,18,0.80);
+    .tag{
+      font-size:12px;
+      font-weight:900;
+      border-radius:999px;
+      padding:7px 10px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.22);
       white-space:nowrap;
     }
-    .trophyMeta{
-      margin-top: 8px;
-      font-size: 13px;
-      color: rgba(27,23,18,0.72);
-      line-height:1.35;
-    }
-    .trophyMeta b{
-      color: rgba(27,23,18,0.92);
-    }
+    .tag.claimed{border-color:rgba(184,155,94,.55); background:rgba(184,155,94,.14)}
+    .tag.pending{border-color:rgba(122,46,46,.45); background:rgba(122,46,46,.10)}
+    .tag.open{border-color:rgba(46,74,63,.35); background:rgba(46,74,63,.10)}
 
-    /* Modal */
-    .modal-backdrop{
-      position:fixed;
-      inset:0;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      background: rgba(0,0,0,0.55);
-    }
-    .modal{
-      width: min(560px, 96vw);
-      border-radius: var(--radius);
-      background: rgba(241,230,210,0.96);
-      color: var(--ink);
-      border: 1px solid rgba(27,23,18,0.16);
-      box-shadow: var(--shadow);
-      padding: 16px;
-    }
-    .modal h3{
-      margin: 0 0 8px;
-      font-family: var(--serif);
-      font-size: 18px;
-    }
-    .modal p{
-      margin: 0 0 12px;
-      color: rgba(27,23,18,0.68);
-      line-height:1.5;
-      font-size: 14px;
-    }
-    .monoBox{
-      font-family: var(--mono);
-      font-size: 12px;
-      background: rgba(255,255,255,0.35);
-      border: 1px solid rgba(27,23,18,0.16);
-      border-radius: 14px;
-      padding: 10px;
-      white-space: pre-wrap;
-    }
-    .modalActions{
-      display:flex;
-      gap:10px;
-      margin-top: 12px;
-    }
-    .btnGhost{
-      background: transparent;
-      border: 1px solid rgba(27,23,18,0.16);
-      color: rgba(27,23,18,0.86);
-      box-shadow:none;
-    }
+    /* Ledger table (simple) */
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:10px 8px;border-bottom:1px solid rgba(20,21,24,.10);vertical-align:top}
+    th{text-align:left;font:800 14px var(--serif);color:rgba(20,21,24,.78)}
+    .mono{font:12px var(--mono);color:rgba(20,21,24,.78)}
+    .km{font-weight:900; white-space:nowrap}
   </style>
 </head>
 
 <body>
-  <div class="page">
+  <div class="wrap">
+    <div class="hero">
+      <h1>The Big Hop. 🌎</h1>
+      <p>A message that travels the world—one hop at a time. Every hop becomes a permanent pin: a place, a moment, a mark.</p>
+    </div>
 
-    <header>
-      <div class="titleBlock">
-        <h1>The Big Hop.🌎</h1>
-        <p>A message that travels the world—one hop at a time. Each confirmed hop becomes a permanent pin: a city, a moment, a mark left behind.</p>
-        <div class="tagline">Move the message. Leave your mark. Join the hop.</div>
-      </div>
-      <button class="btn" id="moveBtn">Move the Message</button>
-    </header>
+    <div class="mapShell">
+      <div class="mapTopTag">📍 Journey Map (visual prototype)</div>
 
-    <!-- Map plaque -->
-    <div class="plaque mapWrap">
-      <div class="mapFrame">
-        <div id="map"></div>
+      <!-- Static pins for vibe -->
+      <div class="pin" style="left:18%;top:46%"></div>
+      <div class="pin" style="left:56%;top:36%"></div>
+      <div class="pin" style="left:78%;top:44%"></div>
+      <div class="pin" style="left:56%;top:70%"></div>
 
-        <div class="mapLabel">
-          <span class="pinDot"></span>
-          Journey Map (Phase 1 preview)
+      <!-- Bottom overlay bar inside map (Hall of Hop + Move button) -->
+      <div class="mapBar">
+        <div class="mapBarLeft" aria-label="Hall of Hop mini achievements">
+          <span class="chip">🏆 Most Hops: <b>northstar</b> · 14</span>
+          <span class="chip">🧭 Biggest Hop: <b>9,240 km</b></span>
+          <span class="chip">🌍 Around the World: <b>paperplane</b></span>
+          <span class="chip">🏛️ Landmark Hunter: <b>northstar</b> · 3</span>
         </div>
-
-        <!-- sample pins (rough world positions just for vibe) -->
-        <div class="pin" data-title="Hop #1 — Vancouver Island" data-sub="Alias: northstar · 7,542 km" style="left:18%; top:44%;"></div>
-        <div class="pin" data-title="Hop #2 — Tokyo" data-sub="Alias: paperplane · 8,916 km" style="left:78%; top:42%;"></div>
-        <div class="pin" data-title="Hop #3 — Berlin" data-sub="Alias: quietatlas · 9,240 km" style="left:56%; top:36%;"></div>
-        <div class="pin" data-title="Hop #4 — Cape Town" data-sub="Alias: quietatlas · 9,240 km" style="left:56%; top:68%;"></div>
-
-        <div class="tip" id="tip">
-          <strong id="tipTitle">Hop</strong>
-          <small id="tipSub">Details</small>
-        </div>
+        <button class="moveBtn">Move the Message</button>
       </div>
     </div>
 
-    <!-- Below map -->
-    <div class="below">
-
-      <!-- Legendary Locations -->
-      <div class="plaque">
-        <div class="sectionHeader">
+    <!-- 2 columns under map -->
+    <div class="columns">
+      <!-- Legendary -->
+      <section class="card">
+        <div class="cardHead">
           <div>
             <h2>Legendary Locations</h2>
-            <div class="sub">Claimable landmarks. Claimed titles are held until someone else gets there.</div>
-          </div>
-          <div class="sub">Up to 50</div>
-        </div>
-
-        <div class="controls">
-          <div class="search" aria-label="search legendary locations">
-            🔎
-            <input id="searchBox" placeholder="Search: Antarctica, White House, Eiffel Tower…" />
-          </div>
-          <div class="chipRow" id="chips">
-            <div class="chip active" data-filter="all">All</div>
-            <div class="chip" data-filter="unclaimed">Unclaimed</div>
-            <div class="chip" data-filter="claimed">Claimed</div>
-            <div class="chip" data-filter="pending">Pending</div>
+            <div class="sub">Searchable · up to 50</div>
           </div>
         </div>
 
-        <div class="list" id="legendList">
-          <!-- sample rows -->
-          <div class="row" data-status="claimed">
+        <div class="searchRow">
+          <input id="legendSearch" class="search" placeholder="Search legendary locations… (e.g., White House, Antarctica)" />
+        </div>
+
+        <div id="legendList" class="scroll">
+          <div class="row" data-text="white house washington usa claimed potus">
             <div class="left">
-              <div class="icon">🏛️</div>
-              <div>
+              <div class="ico">🏛️</div>
+              <div style="min-width:0">
                 <div class="name">The White House</div>
-                <div class="meta">Held by <span class="holder">POTUS_47</span></div>
+                <div class="meta">Held by POTUS_47</div>
               </div>
             </div>
-            <div class="badge claimed">CLAIMED</div>
+            <span class="tag claimed">CLAIMED</span>
           </div>
 
-          <div class="row" data-status="unclaimed">
+          <div class="row" data-text="antarctica south pole unclaimed ice">
             <div class="left">
-              <div class="icon">❄️</div>
-              <div>
+              <div class="ico">❄️</div>
+              <div style="min-width:0">
                 <div class="name">Antarctica</div>
                 <div class="meta">No current holder</div>
               </div>
             </div>
-            <div class="badge unclaimed">UNCLAIMED</div>
+            <span class="tag open">OPEN</span>
           </div>
 
-          <div class="row" data-status="pending">
+          <div class="row" data-text="eiffel tower paris france pending">
             <div class="left">
-              <div class="icon">🗼</div>
-              <div>
+              <div class="ico">🗼</div>
+              <div style="min-width:0">
                 <div class="name">Eiffel Tower</div>
-                <div class="meta">Submitted by <span class="holder">quietatlas</span></div>
+                <div class="meta">Submitted by quietatlas</div>
               </div>
             </div>
-            <div class="badge pending">PENDING</div>
+            <span class="tag pending">PENDING</span>
           </div>
 
-          <div class="row" data-status="claimed">
+          <div class="row" data-text="area 51 nevada usa unclaimed">
             <div class="left">
-              <div class="icon">🗽</div>
-              <div>
-                <div class="name">Statue of Liberty</div>
-                <div class="meta">Held by <span class="holder">northstar</span></div>
-              </div>
-            </div>
-            <div class="badge claimed">CLAIMED</div>
-          </div>
-
-          <div class="row" data-status="unclaimed">
-            <div class="left">
-              <div class="icon">🏔️</div>
-              <div>
-                <div class="name">Mount Everest</div>
+              <div class="ico">👽</div>
+              <div style="min-width:0">
+                <div class="name">Area 51</div>
                 <div class="meta">No current holder</div>
               </div>
             </div>
-            <div class="badge unclaimed">UNCLAIMED</div>
+            <span class="tag open">OPEN</span>
+          </div>
+
+          <div class="row" data-text="space x spacex starbase texas unclaimed">
+            <div class="left">
+              <div class="ico">🚀</div>
+              <div style="min-width:0">
+                <div class="name">Starbase (SpaceX)</div>
+                <div class="meta">No current holder</div>
+              </div>
+            </div>
+            <span class="tag open">OPEN</span>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Hall of Legends -->
-      <div class="plaque">
-        <div class="sectionHeader">
+      <!-- Ledger -->
+      <section class="card">
+        <div class="cardHead">
           <div>
-            <h2>Hall of Legends</h2>
-            <div class="sub">Quick-glance achievements and current holders</div>
+            <h2>Ledger</h2>
+            <div class="sub">Recent confirmed hops (static)</div>
           </div>
         </div>
 
-        <div class="trophyList">
-          <div class="trophy">
-            <div class="trophyTop">
-              <div class="trophyTitle"><span>🏆</span> Most Hops</div>
-              <div class="holder">northstar</div>
-            </div>
-            <div class="trophyMeta"><b>14</b> hops</div>
-          </div>
-
-          <div class="trophy">
-            <div class="trophyTop">
-              <div class="trophyTitle"><span>🧭</span> Biggest Hop</div>
-              <div class="holder">quietatlas</div>
-            </div>
-            <div class="trophyMeta"><b>9,240 km</b> · Berlin → Cape Town</div>
-          </div>
-
-          <div class="trophy">
-            <div class="trophyTop">
-              <div class="trophyTitle"><span>🌍</span> Around the World</div>
-              <div class="holder">paperplane</div>
-            </div>
-            <div class="trophyMeta"><b>Achieved</b> · 40,075 km total</div>
-          </div>
-
-          <div class="trophy">
-            <div class="trophyTop">
-              <div class="trophyTitle"><span>🏛️</span> Landmark Hunter</div>
-              <div class="holder">northstar</div>
-            </div>
-            <div class="trophyMeta"><b>3</b> legendary locations claimed</div>
-          </div>
+        <div class="scroll">
+          <table aria-label="Travel ledger">
+            <thead>
+              <tr>
+                <th style="width:120px">When</th>
+                <th style="width:140px">Alias</th>
+                <th>From → To</th>
+                <th style="width:120px">Distance</th>
+                <th style="width:120px">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">2026-02-10</td>
+                <td><b>quietatlas</b></td>
+                <td>Berlin → Cape Town</td>
+                <td class="km">9,240 km</td>
+                <td class="mono">0.00010</td>
+              </tr>
+              <tr>
+                <td class="mono">2026-02-09</td>
+                <td><b>paperplane</b></td>
+                <td>Tokyo → Berlin</td>
+                <td class="km">8,916 km</td>
+                <td class="mono">0.00010</td>
+              </tr>
+              <tr>
+                <td class="mono">2026-02-08</td>
+                <td><b>northstar</b></td>
+                <td>Vancouver Island → Tokyo</td>
+                <td class="km">7,542 km</td>
+                <td class="mono">0.00010</td>
+              </tr>
+              <tr>
+                <td class="mono">2026-02-07</td>
+                <td><b>harborlight</b></td>
+                <td>Lisbon → Berlin</td>
+                <td class="km">2,318 km</td>
+                <td class="mono">0.00010</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Move modal -->
-  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal">
-      <h3>Move the Message</h3>
-      <p>This is Phase 1 (design proof). Soon, a confirmed transaction will create a verified hop and drop a permanent pin on the map with your alias, location, and distance.</p>
-      <div class="monoBox" id="addrBox">Bitcoin Address (placeholder):
-bc1qexampleaddress000000000000000000000000000000</div>
-      <div class="modalActions">
-        <button class="btn btnGhost" id="closeBtn">Close</button>
-        <button class="btn" id="copyBtn">Copy Address</button>
-      </div>
-    </div>
-        <!-- Travel Ledger (Event Log) -->
-    <div class="plaque ledger">
-      <div class="sectionHeader">
-        <div>
-          <h2>Travel Ledger</h2>
-          <div class="sub">Recent confirmed hops (Phase 1 mock). Later this will be pulled from the map + blockchain confirmations.</div>
-        </div>
-      </div>
-
-      <div class="list" style="max-height: 520px;">
-        <table class="ledgerTable" aria-label="Travel ledger">
-          <thead>
-            <tr>
-              <th style="width:120px;">When</th>
-              <th style="width:140px;">Alias</th>
-              <th>From → To</th>
-              <th style="width:140px;">Distance</th>
-              <th style="width:120px;">Amount</th>
-              <th style="width:240px;">TXID</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="ledgerMono">2026-02-10</div>
-                <div class="smallmuted">12:41 UTC</div>
-              </td>
-              <td><span class="holder">quietatlas</span></td>
-              <td>
-                Berlin → Cape Town
-                <div class="smallmuted">Pinned at Cape Town, South Africa</div>
-              </td>
-              <td class="km">9,240 km</td>
-              <td><span class="ledgerMono">0.00010 BTC</span></td>
-              <td><span class="ledgerMono">tx_placeholder_3</span></td>
-            </tr>
-
-            <tr>
-              <td>
-                <div class="ledgerMono">2026-02-09</div>
-                <div class="smallmuted">19:12 UTC</div>
-              </td>
-              <td><span class="holder">paperplane</span></td>
-              <td>
-                Tokyo → Berlin
-                <div class="smallmuted">Pinned at Berlin, Germany</div>
-              </td>
-              <td class="km">8,916 km</td>
-              <td><span class="ledgerMono">0.00010 BTC</span></td>
-              <td><span class="ledgerMono">tx_placeholder_2</span></td>
-            </tr>
-
-            <tr>
-              <td>
-                <div class="ledgerMono">2026-02-08</div>
-                <div class="smallmuted">08:05 UTC</div>
-              </td>
-              <td><span class="holder">northstar</span></td>
-              <td>
-                Vancouver Island → Tokyo
-                <div class="smallmuted">Pinned at Tokyo, Japan</div>
-              </td>
-              <td class="km">7,542 km</td>
-              <td><span class="ledgerMono">0.00010 BTC</span></td>
-              <td><span class="ledgerMono">tx_placeholder_1</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      </section>
     </div>
   </div>
 
   <script>
-    // --- Map tooltip on sample pins (Phase 1) ---
-    const tip = document.getElementById('tip');
-    const tipTitle = document.getElementById('tipTitle');
-    const tipSub = document.getElementById('tipSub');
+    // Tiny local search (helps even for a static mock)
+    const input = document.getElementById('legendSearch');
+    const list = document.getElementById('legendList');
+    const rows = [...list.querySelectorAll('.row')];
 
-    document.querySelectorAll('.pin').forEach(pin => {
-      pin.addEventListener('mouseenter', (e) => {
-        tipTitle.textContent = pin.dataset.title || 'Hop';
-        tipSub.textContent = pin.dataset.sub || '';
-        tip.style.display = 'block';
-
-        const r = pin.getBoundingClientRect();
-        // position tooltip near the pin (within mapFrame)
-        const parent = pin.parentElement.getBoundingClientRect();
-        const left = (r.left - parent.left) + 14;
-        const top  = (r.top  - parent.top)  - 8;
-
-        tip.style.left = Math.min(left, parent.width - 290) + 'px';
-        tip.style.top  = Math.max(top - 40, 12) + 'px';
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      rows.forEach(r => {
+        const text = (r.getAttribute('data-text') || '').toLowerCase();
+        r.style.display = !q || text.includes(q) ? '' : 'none';
       });
-
-      pin.addEventListener('mouseleave', () => {
-        tip.style.display = 'none';
-      });
-    });
-
-    // --- Legendary list filtering ---
-    const searchBox = document.getElementById('searchBox');
-    const chips = document.getElementById('chips');
-    const rows = Array.from(document.querySelectorAll('#legendList .row'));
-    let activeFilter = 'all';
-
-    function applyFilters(){
-      const q = (searchBox.value || '').trim().toLowerCase();
-      rows.forEach(row => {
-        const status = row.dataset.status;
-        const text = row.innerText.toLowerCase();
-        const okFilter = (activeFilter === 'all') ? true : (status === activeFilter);
-        const okSearch = q ? text.includes(q) : true;
-        row.style.display = (okFilter && okSearch) ? 'flex' : 'none';
-      });
-    }
-
-    chips.addEventListener('click', (e) => {
-      const chip = e.target.closest('.chip');
-      if(!chip) return;
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      activeFilter = chip.dataset.filter;
-      applyFilters();
-    });
-    searchBox.addEventListener('input', applyFilters);
-
-    // --- Modal ---
-    const backdrop = document.getElementById('modalBackdrop');
-    const moveBtn = document.getElementById('moveBtn');
-    const closeBtn = document.getElementById('closeBtn');
-    const copyBtn = document.getElementById('copyBtn');
-
-    function openModal(){
-      backdrop.style.display = 'flex';
-      backdrop.setAttribute('aria-hidden','false');
-    }
-    function closeModal(){
-      backdrop.style.display = 'none';
-      backdrop.setAttribute('aria-hidden','true');
-    }
-    moveBtn.addEventListener('click', openModal);
-    closeBtn.addEventListener('click', closeModal);
-    backdrop.addEventListener('click', (e) => { if(e.target === backdrop) closeModal(); });
-
-    copyBtn.addEventListener('click', async () => {
-      const text = 'bc1qexampleaddress000000000000000000000000000000';
-      try{
-        await navigator.clipboard.writeText(text);
-        copyBtn.textContent = 'Copied';
-        setTimeout(()=> copyBtn.textContent = 'Copy Address', 1200);
-      }catch{
-        copyBtn.textContent = 'Copy failed';
-        setTimeout(()=> copyBtn.textContent = 'Copy Address', 1200);
-      }
     });
   </script>
 </body>
