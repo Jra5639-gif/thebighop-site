@@ -1,557 +1,130 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>The Big Hop</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Mapbox -->
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>The Big Hop — Coming Soon</title>
+  <meta name="description" content="The Big Hop is launching soon." />
 
   <style>
     :root{
-      --bg0:#0b0d10;
-      --card:rgba(255,255,255,0.055);
-      --card2:rgba(255,255,255,0.035);
-      --edge2:rgba(255,255,255,0.07);
-      --text:#e9e6de;
-      --muted:rgba(233,230,222,0.70);
-      --muted2:rgba(233,230,222,0.55);
+      --bg:#0b0d10;
+      --text:#eee9df;
+      --muted:rgba(238,233,223,.68);
+      --edge:rgba(255,255,255,.10);
+      --card:rgba(255,255,255,.05);
       --accent:#d8b46a;
-      --accent2:#f3d8a0;
-      --good:#6edc9a;
-      --warn:#e6c55a;
     }
-
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 600px at 50% -80px, #1b2230 0%, var(--bg0) 55%, #07080b 100%);
-      color:var(--text);
-    }
-
-    .wrap{
-      max-width:1200px;
-      margin:0 auto;
-      padding:24px 18px 56px;
-    }
-
-    header{
-      text-align:center;
-      padding:18px 0 8px;
-    }
-    header h1{
-      margin:0;
-      font-size: clamp(2.3rem, 5vw, 3.35rem);
-      font-weight:650;
-      letter-spacing:0.02em;
-    }
-    header .sub{
-      margin:10px auto 0;
-      max-width:860px;
-      color:var(--muted);
-      line-height:1.5;
-      font-size:1.02rem;
-    }
-
-    /* Map card */
-    .mapCard{
-      margin-top:22px;
-      background: linear-gradient(180deg, var(--card) 0%, var(--card2) 100%);
-      border-radius:20px;
-      box-shadow:
-        inset 0 0 0 1px var(--edge2),
-        0 18px 40px rgba(0,0,0,0.45);
-      overflow:hidden;
-    }
-
-    .mapTopRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:14px 16px 0 16px;
-      flex-wrap:wrap;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:9px 12px;
-      border-radius:999px;
-      background: rgba(255,255,255,0.06);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.09);
-      color:var(--text);
-      font-size:0.88rem;
-      white-space:nowrap;
-    }
-    .pill b{font-weight:650}
-    .pillDot{
-      width:8px;height:8px;border-radius:50%;
-      background: var(--accent);
-      box-shadow: 0 0 10px rgba(216,180,106,0.55);
-    }
-
-    .btn{
-      padding:10px 16px;
-      border-radius:999px;
-      border:1px solid rgba(216,180,106,0.45);
-      background: rgba(216,180,106,0.08);
-      color: var(--text);
-      cursor:pointer;
-      font-weight:650;
-      letter-spacing:0.02em;
-      user-select:none;
-    }
-    .btn:hover{
-      background: rgba(216,180,106,0.14);
-      border-color: rgba(216,180,106,0.60);
-    }
-    .btn.ghost{
-      border-color: rgba(255,255,255,0.22);
-      background: rgba(255,255,255,0.05);
-    }
-    .btn.ghost:hover{
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.30);
-    }
-
-    #map{
-      height:420px;
-      width:100%;
-      margin-top:12px;
-    }
-
-    /* Panels grid */
-    .grid{
-      margin-top:22px;
+      min-height:100vh;
       display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:16px;
-    }
-
-    .panel{
-      background: rgba(255,255,255,0.045);
-      border-radius:18px;
-      box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.075),
-        0 12px 26px rgba(0,0,0,0.35);
-      padding:14px 14px 12px 14px;
-
-      /* ✅ Critical: fixed-height flex column so list can scroll */
-      height: 330px;
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-    }
-
-    .panelHeader{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:10px;
-      flex: 0 0 auto;
-    }
-    .panelHeader h3{
-      margin:0;
-      font-size:1.05rem;
-      letter-spacing:0.01em;
-    }
-    .panelHeader .hint{
-      color:var(--muted2);
-      font-size:0.82rem;
-      white-space:nowrap;
-    }
-
-    .search{
-      width:100%;
-      background: rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.10);
-      border-radius:12px;
-      padding:10px 12px;
+      place-items:center;
+      background:
+        radial-gradient(900px 500px at 50% -120px, rgba(45,70,120,.45), transparent 60%),
+        radial-gradient(700px 450px at 50% 120%, rgba(216,180,106,.10), transparent 55%),
+        var(--bg);
       color:var(--text);
-      outline:none;
-      margin-bottom:10px;
-      flex: 0 0 auto;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial;
     }
-    .search::placeholder{color:rgba(233,230,222,0.45)}
-
-    /* ✅ This is now the only scroller area */
-    .scroll{
-      overflow:auto;
-      padding-right:6px;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.18) transparent;
-      flex: 1 1 auto;
-      min-height:0;
+    .wrap{
+      width:min(900px, 92vw);
+      padding:28px 18px;
+      text-align:center;
     }
-    .scroll::-webkit-scrollbar{width:8px}
-    .scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.14);border-radius:10px}
-
+    .badge{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--edge);
+      color:var(--muted);
+      letter-spacing:.03em;
+      font-size:.9rem;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 18px rgba(216,180,106,.7);
+    }
+    h1{
+      margin:16px 0 8px;
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 700;
+      letter-spacing:.02em;
+    }
+    .tagline{
+      margin:0 auto;
+      max-width: 720px;
+      color:var(--muted);
+      line-height:1.65;
+      font-size: 1.05rem;
+    }
+    .card{
+      margin:22px auto 0;
+      max-width: 760px;
+      padding:18px 18px;
+      background:var(--card);
+      border:1px solid var(--edge);
+      border-radius:18px;
+      text-align:left;
+      color:var(--muted);
+    }
+    .card b{color:var(--text)}
     .row{
       display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:10px 10px;
-      border-radius:14px;
-      background: rgba(255,255,255,0.04);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-      margin-bottom:10px;
-    }
-    .left{
-      display:flex;
+      flex-wrap:wrap;
       gap:10px;
-      align-items:center;
-      min-width:0;
+      margin-top:14px;
     }
-    .icon{
-      width:34px;height:34px;border-radius:999px;
-      display:grid;place-items:center;
-      background: rgba(255,255,255,0.08);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
-      flex:0 0 auto;
-      font-size:16px;
-    }
-    .txt{
-      display:flex;
-      flex-direction:column;
-      min-width:0;
-    }
-    .title{
-      font-weight:700;
-      font-size:0.95rem;
-      line-height:1.15;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 260px;
-    }
-    .subline{
-      color:var(--muted2);
-      font-size:0.82rem;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 260px;
-      margin-top:2px;
-    }
-
-    .badge{
-      padding:7px 10px;
+    .pill{
+      padding:9px 12px;
       border-radius:999px;
-      font-size:0.74rem;
-      font-weight:800;
-      letter-spacing:0.05em;
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      flex:0 0 auto;
+      border:1px solid var(--edge);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:.92rem;
     }
-    .b-open{border-color: rgba(110,220,154,0.35); background: rgba(110,220,154,0.10)}
-    .b-claimed{border-color: rgba(216,180,106,0.40); background: rgba(216,180,106,0.12)}
-    .b-pending{border-color: rgba(230,197,90,0.40); background: rgba(230,197,90,0.10)}
-
-    .ledgerRow{
-      display:grid;
-      grid-template-columns: 74px 1fr 90px;
-      gap:10px;
-      align-items:center;
-      padding:10px 10px;
-      border-radius:14px;
-      background: rgba(255,255,255,0.04);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-      margin-bottom:10px;
-      font-size:0.9rem;
+    a{
+      color:var(--text);
+      text-decoration: none;
+      border-bottom:1px dashed rgba(216,180,106,.55);
     }
-    .when{color:var(--muted2); font-size:0.82rem}
-    .who{font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-    .dist{justify-self:end; font-weight:800}
-    .distPlus{color: var(--accent2)}
-
-    /* Map markers */
-    .legend-dot{
-      width:7px;height:7px;border-radius:50%;
-      background: rgba(216,180,106,0.16);
-      box-shadow: 0 0 10px rgba(216,180,106,0.16);
-      cursor: default;
+    a:hover{border-bottom-style:solid}
+    .foot{
+      margin-top:18px;
+      color:rgba(238,233,223,.45);
+      font-size:.9rem;
     }
-    .legend-dot.claimed{
-      width:9px;height:9px;
-      background: rgba(216,180,106,0.92);
-      box-shadow: 0 0 18px rgba(216,180,106,0.70);
-    }
-
-    .hop-pin{
-      width:10px;height:10px;border-radius:50%;
-      background: rgba(216,180,106,1);
-      box-shadow: 0 0 22px rgba(216,180,106,0.85);
-      cursor: default;
-    }
-
-    @media (max-width: 980px){
-      #map{height:380px}
-      .grid{grid-template-columns: 1fr}
-      .panel{height: 360px;}
-      .title,.subline{max-width: 62vw}
-    }
-
-    .mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { opacity: 0.7; }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <header>
-      <h1>The Big Hop. 🌍</h1>
-      <div class="sub">
-        A single message travels the world — one hop at a time. Each hop leaves a permanent mark: a place, a distance, a moment.
+  <main class="wrap">
+    <div class="badge"><span class="dot"></span> The Big Hop is in active build</div>
+
+    <h1>The Big Hop. 🌍</h1>
+
+    <p class="tagline">
+      A single message travels the world — one hop at a time.
+      Each hop leaves a permanent mark: a place, a distance, a moment.
+    </p>
+
+    <section class="card" aria-label="Coming soon details">
+      <div><b>Coming soon:</b> the live world map, the travel ledger, and legendary discovery.</div>
+      <div class="row">
+        <div class="pill">📍 Real locations</div>
+        <div class="pill">📜 Public ledger</div>
+        <div class="pill">🏛 Legendary claims</div>
+        <div class="pill">🧭 Hall of Hop</div>
       </div>
-    </header>
-
-    <section class="mapCard">
-      <div class="mapTopRow">
-        <div class="pill"><span class="pillDot"></span> Current pin: <b>Vancouver Island</b></div>
-        <div class="pill">Total distance: <b>218,004 km</b></div>
-        <div class="pill">Longest hop: <b>9,240 km</b></div>
-
-        <button class="btn ghost" id="resetView">World View</button>
-        <button class="btn" id="moveMessage">Move the message</button>
-      </div>
-
-      <div id="map"></div>
-      <!-- ✅ removed the floating bottom strip -->
-    </section>
-
-    <section class="grid">
-      <!-- Legendary -->
-      <div class="panel">
-        <div class="panelHeader">
-          <h3>🏛 Legendary Locations</h3>
-          <div class="hint">searchable</div>
-        </div>
-
-        <input id="legendSearch" class="search" placeholder="Search legendary locations…" />
-        <div id="legendList" class="scroll"></div>
-      </div>
-
-      <!-- Ledger -->
-      <div class="panel">
-        <div class="panelHeader">
-          <h3>📜 Ledger</h3>
-          <div class="hint">recent confirmed hops</div>
-        </div>
-        <div id="ledgerList" class="scroll"></div>
-      </div>
-
-      <!-- Hall of Hop -->
-      <div class="panel">
-        <div class="panelHeader">
-          <h3>🧭 Hall of Hop</h3>
-          <div class="hint">at a glance</div>
-        </div>
-        <div id="hallList" class="scroll"></div>
+      <div class="foot">
+        Want updates later? Keep this page bookmarked.
       </div>
     </section>
-  </div>
-
-  <script>
-    mapboxgl.accessToken =
-      'pk.eyJ1IjoidGhlYmlnaG9wIiwiYSI6ImNtbGZ4Zm9zZzA2M3EzZXB0c2ZnNXllZHkifQ.2I_oRh9f5AUmMzxEnMXCRQ';
-
-    const MAP_STYLE = 'mapbox://styles/mapbox/navigation-night-v1';
-
-    const WORLD_BOUNDS = [
-      [-179.5, -85.0],
-      [ 179.5,  85.0]
-    ];
-
-    const map = new mapboxgl.Map({
-      container: 'map',
-      style: MAP_STYLE,
-      center: [0, 15],
-      zoom: 1.2,
-      projection: 'mercator',
-      minZoom: 1.05,
-      maxZoom: 8.5,
-      maxBounds: WORLD_BOUNDS,
-      dragRotate: false,
-      pitchWithRotate: false,
-      attributionControl: true
-    });
-
-    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
-    map.scrollZoom.setWheelZoomRate(1 / 650);
-
-    function fitWorld(duration=0){
-      map.fitBounds(WORLD_BOUNDS, {
-        padding: { top: 40, bottom: 40, left: 40, right: 40 },
-        duration
-      });
-    }
-
-    document.getElementById('resetView').addEventListener('click', () => fitWorld(700));
-    document.getElementById('moveMessage').addEventListener('click', () => fitWorld(700));
-
-    // 50 legendary (same as before; keeping it long so you can confirm scroll)
-    const legendaryLocations = [
-      { name:"White House", icon:"🏛️", coords:[-77.0365, 38.8977], status:"CLAIMED", claimed:true, holder:"POTUS_47" },
-      { name:"Capitol Hill", icon:"🏛️", coords:[-77.0091, 38.8899], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Palace of Westminster", icon:"🏛️", coords:[-0.1246, 51.5007], status:"OPEN", claimed:false, holder:"—" },
-      { name:"The Kremlin", icon:"🏛️", coords:[37.6173, 55.7520], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Forbidden City", icon:"🏯", coords:[116.3972, 39.9163], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Great Pyramid of Giza", icon:"🗿", coords:[31.1342, 29.9792], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Stonehenge", icon:"🪨", coords:[-1.8262, 51.1789], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Machu Picchu", icon:"⛰️", coords:[-72.5449, -13.1631], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Petra", icon:"🏜️", coords:[35.4444, 30.3285], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Angkor Wat", icon:"🛕", coords:[103.8669, 13.4125], status:"OPEN", claimed:false, holder:"—" },
-      { name:"North Pole", icon:"🧭", coords:[0.0, 89.9], status:"OPEN", claimed:false, holder:"—" },
-      { name:"South Pole", icon:"❄️", coords:[0.0, -89.9], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Mount Everest Base Camp", icon:"🏔️", coords:[86.8570, 28.0026], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Cape Horn", icon:"🌊", coords:[-67.2676, -55.9836], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Null Island (0,0)", icon:"🧷", coords:[0.0, 0.0], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Eiffel Tower", icon:"🗼", coords:[2.2945, 48.8584], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Statue of Liberty", icon:"🗽", coords:[-74.0445, 40.6892], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Sydney Opera House", icon:"🎭", coords:[151.2153, -33.8568], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Burj Khalifa", icon:"🏙️", coords:[55.2744, 25.1972], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Golden Gate Bridge", icon:"🌉", coords:[-122.4783, 37.8199], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Kennedy Space Center", icon:"🚀", coords:[-80.6043, 28.5729], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Baikonur Cosmodrome", icon:"🚀", coords:[63.3050, 45.9646], status:"OPEN", claimed:false, holder:"—" },
-      { name:"CERN", icon:"⚛️", coords:[6.0700, 46.2330], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Very Large Array", icon:"📡", coords:[-107.6184, 34.0784], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Mauna Kea Observatory", icon:"🔭", coords:[-155.4681, 19.8207], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Berlin Wall Memorial", icon:"🧱", coords:[13.3904, 52.5351], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Checkpoint Charlie", icon:"🚧", coords:[13.3903, 52.5076], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Korean DMZ (approx)", icon:"🕊️", coords:[126.9780, 38.1950], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Peace Arch", icon:"🕊️", coords:[-122.7577, 49.0027], status:"OPEN", claimed:false, holder:"—" },
-      { name:"UN Headquarters", icon:"🌐", coords:[-73.9680, 40.7489], status:"OPEN", claimed:false, holder:"—" },
-      { name:"The Vatican", icon:"⛪", coords:[12.4534, 41.9029], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Mecca (Masjid al-Haram)", icon:"🕋", coords:[39.8262, 21.4225], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Varanasi Ghats", icon:"🪔", coords:[83.0100, 25.3109], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Uluru", icon:"🪨", coords:[131.0369, -25.3444], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Easter Island (Rapa Nui)", icon:"🗿", coords:[-109.3497, -27.1127], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Area 51 (perimeter)", icon:"👽", coords:[-115.8100, 37.2350], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Nazca Lines", icon:"🌀", coords:[-75.1333, -14.7000], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Socotra Island", icon:"🪐", coords:[54.0200, 12.4630], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Bermuda Triangle (approx)", icon:"🌪️", coords:[-64.7500, 25.0000], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Point Nemo", icon:"🌊", coords:[-123.3933, -48.8767], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Hiroshima Peace Memorial", icon:"🕊️", coords:[132.4536, 34.3955], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Auschwitz-Birkenau", icon:"🕯️", coords:[19.2035, 50.0359], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Robben Island", icon:"🏝️", coords:[18.3700, -33.8060], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Ground Zero (NYC)", icon:"🕯️", coords:[-74.0134, 40.7115], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Arlington National Cemetery", icon:"🕯️", coords:[-77.0700, 38.8783], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Ushuaia", icon:"🧭", coords:[-68.3030, -54.8019], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Longyearbyen (Svalbard)", icon:"❄️", coords:[15.6333, 78.2232], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Tristan da Cunha", icon:"🌋", coords:[-12.2777, -37.1052], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Pitcairn Island", icon:"🏝️", coords:[-130.1015, -25.0663], status:"OPEN", claimed:false, holder:"—" },
-      { name:"Challenger Deep (approx)", icon:"🌑", coords:[142.1990, 11.3500], status:"OPEN", claimed:false, holder:"—" }
-    ];
-
-    const ledger = [
-      { when:"Today", who:"northstar", dist:"+2,931 km" },
-      { when:"2d", who:"paperplane", dist:"+1,204 km" },
-      { when:"4d", who:"anonymous", dist:"+874 km" },
-      { when:"6d", who:"returning participant", dist:"+412 km" }
-    ];
-
-    const hall = [
-      { icon:"🏆", title:"Longest hop", sub:"9,240 km" },
-      { icon:"🔁", title:"Most hops", sub:"northstar (14)" },
-      { icon:"🌍", title:"Around the world", sub:"paperplane" },
-      { icon:"🏛️", title:"Legendary claims", sub:"paperplane (1) · POTUS_47 (1)" }
-    ];
-
-    // Render Legendary List (scroll works now)
-    const legendListEl = document.getElementById('legendList');
-    function badgeClass(status){
-      if(status === "OPEN") return "badge b-open";
-      if(status === "CLAIMED") return "badge b-claimed";
-      if(status === "PENDING") return "badge b-pending";
-      return "badge";
-    }
-
-    function renderLegend(filter=""){
-      const q = filter.trim().toLowerCase();
-      legendListEl.innerHTML = "";
-      legendaryLocations
-        .filter(x => x.name.toLowerCase().includes(q))
-        .forEach(x => {
-          const row = document.createElement('div');
-          row.className = 'row';
-          row.innerHTML = `
-            <div class="left">
-              <div class="icon">${x.icon}</div>
-              <div class="txt">
-                <div class="title">${x.name}</div>
-                <div class="subline">${x.status === "CLAIMED" ? `Held by ${x.holder}` : "Unclaimed"}</div>
-              </div>
-            </div>
-            <div class="${badgeClass(x.status)}">${x.status}</div>
-          `;
-          legendListEl.appendChild(row);
-        });
-    }
-    document.getElementById('legendSearch').addEventListener('input', (e)=>renderLegend(e.target.value));
-    renderLegend("");
-
-    // Render Ledger
-    const ledgerEl = document.getElementById('ledgerList');
-    ledger.forEach(x=>{
-      const r = document.createElement('div');
-      r.className = 'ledgerRow';
-      r.innerHTML = `
-        <div class="when">${x.when}</div>
-        <div class="who">${x.who}</div>
-        <div class="dist distPlus">${x.dist}</div>
-      `;
-      ledgerEl.appendChild(r);
-    });
-
-    // Render Hall
-    const hallEl = document.getElementById('hallList');
-    hall.forEach(x=>{
-      const row = document.createElement('div');
-      row.className = 'row';
-      row.innerHTML = `
-        <div class="left">
-          <div class="icon">${x.icon}</div>
-          <div class="txt">
-            <div class="title">${x.title}</div>
-            <div class="subline">${x.sub}</div>
-          </div>
-        </div>
-        <div class="badge b-claimed">LIVE</div>
-      `;
-      hallEl.appendChild(row);
-    });
-
-    map.on('load', () => {
-      fitWorld(0);
-
-      legendaryLocations.forEach(loc => {
-        const el = document.createElement('div');
-        el.className = loc.claimed ? 'legend-dot claimed' : 'legend-dot';
-        el.title = loc.name;
-
-        const popup = new mapboxgl.Popup({ offset: 12, closeButton: false, closeOnClick: true })
-          .setText(loc.name);
-
-        new mapboxgl.Marker(el)
-          .setLngLat(loc.coords)
-          .setPopup(popup)
-          .addTo(map);
-      });
-
-      const hopEl = document.createElement('div');
-      hopEl.className = 'hop-pin';
-      hopEl.title = "Current pin: Vancouver Island";
-
-      new mapboxgl.Marker(hopEl)
-        .setLngLat([-123.3656, 48.4284])
-        .addTo(map);
-    });
-  </script>
+  </main>
 </body>
 </html>
